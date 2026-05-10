@@ -1,0 +1,19 @@
+# Backups
+*.bak
+*.old
+*.tmp
+
+# Logs
+*.log
+
+# Cache
+.cache/
+.local/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Cosas raras de editores
+*~
+*.swp
