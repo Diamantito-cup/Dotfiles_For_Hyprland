@@ -31,7 +31,7 @@ Pero para que funcione deben tener instaladas las siguientes dependencias
 
 11- HyprMod (aplicacion de controladores de hyprland,disponible en otro repo de GitHub)
 
-Con esto aclarado, lo unico que tiene que hacer es usar el /.install.sh y ya, debería (digo debería porque la verdad está en desarrollo todavía)
+Con esto aclarado, lo unico que tiene que hacer es usar el ./install.sh y ya, debería (digo debería porque la verdad está en desarrollo todavía)
 instalarles todo en sus sitema, sigo trabajando en la sustitución de carpetas y todo eso, así que posiblemente tenga errores y bugs que con el tiempo voy a arreglar :3 
 
 ## Aquí como va a quedar su terminal de kitty:
@@ -49,6 +49,8 @@ Tengan en cuenta que todavía sigo trabajando en el .config de fastfetch así qu
 https://github.com/BlueManCZ/hyprmod.git
 
 Gracias por leer :3
+
+Si les intereza estoy disponible para peticiones de cambio y reportes de bugs 👍
 
 ACLARACIÓN:
 ---
