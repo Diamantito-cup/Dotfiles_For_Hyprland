@@ -29,6 +29,8 @@ Pero para que funcione deben tener instaladas las siguientes dependencias
 
 10- zsh-syntax-highlighting y zsh-autosuggestions
 
+11- HyprMod (aplicacion de controladores de hyprland,disponible en otro repo de GitHub)
+
 Con esto aclarado, lo unico que tiene que hacer es usar el /.install.sh y ya, debería (digo debería porque la verdad está en desarrollo todavía)
 instalarles todo en sus sitema, sigo trabajando en la sustitución de carpetas y todo eso, así que posiblemente tenga errores y bugs que con el tiempo voy a arreglar :3 
 
@@ -42,6 +44,9 @@ Tengan en cuenta que todavía sigo trabajando en el .config de fastfetch así qu
 
 ## y este es wofi:
 ![Wofi Launcher](assets/wofi.png)
+
+## Repo de HyprMod:
+https://github.com/BlueManCZ/hyprmod.git
 
 Gracias por leer :3
 
