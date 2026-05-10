@@ -121,5 +121,5 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 if [[ -o interactive ]]; then
 
 	clear
-    fastfetch --logo "/home/angelito/Descargas/vivian.jpg" --logo-type kitty --logo-width 28 --logo-height 12
+    fastfetch
 fi
