@@ -40,3 +40,9 @@ y este es wofi:
 ![Wofi Launcher](assets/wofi.png)
 
 Gracias por leer :3
+
+ACLARACIÓN:
+---
+## ⚖️ Licencia
+
+Este proyecto está bajo la licencia **GNU GPL v3.0**. Eres libre de usarlo, modificarlo y distribuirlo, siempre y cuando mantengas la misma licencia.
