@@ -52,6 +52,10 @@ Gracias por leer :3
 
 Si les intereza estoy disponible para peticiones de cambio y reportes de bugs 👍
 
+## ACTUALIZACIÓN
+
+Ahora mismo estoy mejorando el ./install.sh para que descarge las dependencias automaticamente, claro, para esto trendran que tener activado los repositorios AUR de yay (sigo trabajando con que sea compatible con paru :3 )
+
 ACLARACIÓN:
 ---
 ## ⚖️ Licencia
