@@ -1,74 +1,75 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
+# Salir inmediatamente si un comando falla
 set -e
 
-# Verificar que estás en la raíz del repo
-if [ ! -f "install.sh" ] || [ ! -d "hypr" ]; then
-    echo "❌ Error: Ejecuta este script desde la raíz del repositorio."
-    exit 1
-fi
+# Colores para la terminal
+VERDE="\e[0;32m"
+AMARILLO="\e[0;33m"
+ROJO="\e[0;31m"
+RESET="\e[0m"
 
-check_dep() {
-    if ! command -v "$1" &> /dev/null; then
-        echo "❌ Falta dependencia: $1"
-        exit 1
+echo -e "${VERDE}🚀 Iniciando instalación del entorno de pruebas (Lua)...${RESET}"
+
+# Definir directorios base
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE}")" && pwd)"
+CONFIG_DIR="$HOME/.config"
+BACKUP_DIR="$HOME/.config_hypr_bak_$(date +%Y%m%d_%H%M%S)"
+
+# Lista de carpetas/archivos a instalar en ~/.config
+COMPONENTES=("hyprland.lua" "cava" "wofi" "caelestia")
+
+# 1. Crear copia de seguridad si ya existen configuraciones previas
+echo -e "${AMARILLO}📦 Verificando configuraciones existentes para respaldo...${RESET}"
+NECESITA_BACKUP=false
+
+for comp in "${COMPONENTES[@]}"; do
+    if [ -e "$CONFIG_DIR/$comp" ] || [ "$comp" == "hyprland.lua" -a -e "$CONFIG_DIR/hypr/hyprland.conf" ]; then
+        NECESITA_BACKUP=true
     fi
-}
-
-check_dep hyprland
-check_dep kitty
-check_dep zsh
-
-if [ -d "$HOME/.config/hypr" ]; then
-    echo "⚠️ Parece que ya tienes configuraciones instaladas."
-fi
-
-echo -e "${BLUE}🔄 Actualizando base de datos de paquetes...${NC}"
-sudo pacman -Sy
-
-# --- Colores ---
-BLUE='\033[0;34m'
-GREEN='\033[0;32m'
-NC='\033[0m'
-
-echo -e "${BLUE}🚀 Configurando entorno de desarrollo para angelito...${NC}"
-
-# 1. Habilitar yay (AUR Helper)
-if ! command -v yay &> /dev/null; then
-    echo -e "${GREEN}📦 yay no encontrado. Instalando desde el AUR...${NC}"
-    sudo pacman -S --needed base-devel git
-    git clone https://aur.archlinux.org/yay.git || exit 1
-    cd yay || exit 1
-    makepkg -si --noconfirm
-    cd ..
-    rm -rf yay
-else
-    echo -e "${BLUE}✅ yay ya está instalado.${NC}"
-fi
-
-# 2. Dependencias (Ahora sí, usando yay)
-# Incluimos ImageMagick para el logo de Fastfetch y p10k
-DEPENDENCIAS=(
-    hyprland kitty zsh fastfetch imagemagick wofi cava 
-    ttf-meslo-nerd-font-powerlevel10k 
-    zsh-syntax-highlighting zsh-autosuggestions
-    caelestia-shell-git hyprmod
-)
-
-echo -e "${GREEN}📥 Instalando dependencias del sistema y Zsh...${NC}"
-yay -S --needed --noconfirm "${DEPENDENCIAS[@]}"
-
-# 3. Configuración de Dotfiles (Enlaces simbólicos)
-# Esto vincula tu .zshrc sin errores de Powerlevel10k
-echo -e "${GREEN}🔗 Creando enlaces simbólicos...${NC}"
-CARPETAS=("hypr" "kitty" "wofi" "cava" "fastfetch")
-for carpeta in "${CARPETAS[@]}"; do
-    [ -d "$HOME/.config/$carpeta" ] && mv "$HOME/.config/$carpeta" "$HOME/.config/${carpeta}_bak"
-    ln -sf "$(pwd)/$carpeta" "$HOME/.config/$carpeta"
 done
 
-# Vincular .zshrc corregido
-[ -f ~/.zshrc ] && mv ~/.zshrc ~/.zshrc_bak
-ln -sf "$(pwd)/.zshrc" ~/.zshrc
+if [ "$NECESITA_BACKUP" = true ]; then
+    mkdir -p "$BACKUP_DIR/hypr"
+    echo -e "${AMARILLO}💾 Respaldando configuraciones antiguas en: $BACKUP_DIR${RESET}"
+    
+    # Respaldar la carpeta completa de Hyprland antigua si existe
+    if [ -d "$CONFIG_DIR/hypr" ]; then
+        cp -r "$CONFIG_DIR/hypr/"* "$BACKUP_DIR/hypr/" 2>/dev/null || true
+    fi
+    
+    # Respaldar los otros componentes
+    for comp in "cava" "wofi" "caelestia"; do
+        if [ -d "$CONFIG_DIR/$comp" ]; then
+            mv "$CONFIG_DIR/$comp" "$BACKUP_DIR/"
+        fi
+    done
+fi
 
-echo -e "${BLUE}✅ ¡Todo listo! yay habilitado y sistema configurado.${NC}"
+# 2. Limpieza crítica de Hyprland viejo (.conf)
+# Si hyprland.conf se queda en ~/.config/hypr/, el sistema podría ignorar tu archivo .lua
+if [ -f "$CONFIG_DIR/hypr/hyprland.conf" ]; then
+    echo -e "${ROJO}🗑️ Removiendo hyprland.conf antiguo para priorizar la carga de Lua...${RESET}"
+    rm -f "$CONFIG_DIR/hypr/hyprland.conf"
+fi
+
+# 3. Instalación de los nuevos archivos de la rama dev
+echo -e "${VERDE}⚙️ Instalando nuevos archivos de configuración...${RESET}"
+
+# Instalar Hyprland Lua
+mkdir -p "$CONFIG_DIR/hypr"
+cp "$SCRIPT_DIR/hyprland.lua" "$CONFIG_DIR/hypr/hyprland.lua"
+echo -e "  ↳ ${VERDE}Instalado:${RESET} hyprland.lua -> $CONFIG_DIR/hypr/"
+
+# Instalar el resto de aplicaciones
+for comp in "cava" "wofi" "caelestia"; do
+    if [ -d "$SCRIPT_DIR/$comp" ]; then
+        cp -r "$SCRIPT_DIR/$comp" "$CONFIG_DIR/"
+        echo -e "  ↳ ${VERDE}Instalada la carpeta:${RESET} $comp -> $CONFIG_DIR/"
+    else
+        echo -e "  ↳ ${ROJO}Advertencia:${RESET} No se encontró la carpeta $comp en el repositorio."
+    fi
+done
+
+echo -e "${VERDE}✅ ¡Entorno de desarrollo configurado con éxito!${RESET}"
+echo -e "${AMARILLO}💡 Reinicia tu sesión de Hyprland para aplicar los cambios basados en Lua.${RESET}"
