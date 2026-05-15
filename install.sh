@@ -1,55 +1,48 @@
 #!/bin/bash
 
-# --- Colores para la salida ---
-GREEN='\033[0;32m'
+# --- Colores ---
 BLUE='\033[0;34m'
+GREEN='\033[0;32m'
 NC='\033[0m'
 
-echo -e "${BLUE}🚀 Iniciando automatización total de Dotfiles...${NC}"
+echo -e "${BLUE}🚀 Configurando entorno de desarrollo para angelito...${NC}"
 
-# Asegurar que estamos en el directorio del repo
-cd "$(dirname "$0")"
-
-# 1. Instalación de dependencias (Pacman + AUR)
-# Incluye todo lo de tu imagen: Hyprland, Kitty, FastFetch, ImageMagick, etc.
-DEPENDENCIAS=(
-    hyprland caelestia-shell-git kitty zsh oh-my-zsh-git 
-    ttf-meslo-nerd-font-powerlevel10k fastfetch imagemagick 
-    wofi cava zsh-syntax-highlighting zsh-autosuggestions hyprmod
-)
-
-echo -e "${GREEN}📦 Instalando paquetes y dependencias...${NC}"
-if command -v yay &> /dev/null; then
-    yay -S --needed "${DEPENDENCIAS[@]}"
+# 1. Habilitar yay (AUR Helper)
+if ! command -v yay &> /dev/null; then
+    echo -e "${GREEN}📦 yay no encontrado. Instalando desde el AUR...${NC}"
+    sudo pacman -S --needed base-devel git
+    git clone https://aur.archlinux.org/yay.git
+    cd yay
+    makepkg -si --noconfirm
+    cd ..
+    rm -rf yay
 else
-    echo "⚠️ yay no encontrado. Instalando dependencias con pacman (las de AUR fallarán)..."
-    sudo pacman -S --needed hyprland kitty zsh fastfetch imagemagick wofi cava
+    echo -e "${BLUE}✅ yay ya está instalado.${NC}"
 fi
 
-# 2. Configuración de Carpetas (Enlace Simbólico vs Copia)
-# Usar enlaces simbólicos (ln -s) permite que los cambios en .config se guarden en tu repo
-echo -e "${GREEN}📂 Configurando carpetas en ~/.config...${NC}"
-mkdir -p ~/.config
+# 2. Dependencias (Ahora sí, usando yay)
+# Incluimos ImageMagick para el logo de Fastfetch y p10k
+DEPENDENCIAS=(
+    hyprland kitty zsh fastfetch imagemagick wofi cava 
+    ttf-meslo-nerd-font-powerlevel10k 
+    zsh-syntax-highlighting zsh-autosuggestions
+    caelestia-shell- hyprmod
+)
 
+echo -e "${GREEN}📥 Instalando dependencias del sistema y Zsh...${NC}"
+yay -S --needed --noconfirm "${DEPENDENCIAS[@]}"
+
+# 3. Configuración de Dotfiles (Enlaces simbólicos)
+# Esto vincula tu .zshrc sin errores de Powerlevel10k
+echo -e "${GREEN}🔗 Creando enlaces simbólicos...${NC}"
 CARPETAS=("hypr" "kitty" "wofi" "cava" "fastfetch")
-
 for carpeta in "${CARPETAS[@]}"; do
-    if [ -d "$HOME/.config/$carpeta" ]; then
-        echo "🔄 Respaldando config antigua de $carpeta..."
-        mv "$HOME/.config/$carpeta" "$HOME/.config/${carpeta}_bak"
-    fi
-    echo "🔗 Creando enlace para $carpeta..."
+    [ -d "$HOME/.config/$carpeta" ] && mv "$HOME/.config/$carpeta" "$HOME/.config/${carpeta}_bak"
     ln -s "$(pwd)/$carpeta" "$HOME/.config/$carpeta"
 done
 
-# 3. Configuración de Zsh
-if [ -f ".zshrc" ]; then
-    echo "🐚 Instalando .zshrc..."
-    [ -f ~/.zshrc ] && mv ~/.zshrc ~/.zshrc_bak
-    ln -s "$(pwd)/.zshrc" ~/.zshrc
-fi
+# Vincular .zshrc corregido
+[ -f ~/.zshrc ] && mv ~/.zshrc ~/.zshrc_bak
+ln -s "$(pwd)/.zshrc" ~/.zshrc
 
-# Cambiar shell si es necesario
-[[ $SHELL != "/usr/bin/zsh" ]] && chsh -s $(which zsh)
-
-echo -e "${BLUE}✅ Instalación completa. ¡Disfruta tu día libre cacharreando!${NC}"
+echo -e "${BLUE}✅ ¡Todo listo! yay habilitado y sistema configurado.${NC}"
