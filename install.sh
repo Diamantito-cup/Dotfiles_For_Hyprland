@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # --- Colores ---
 BLUE='\033[0;34m'
 GREEN='\033[0;32m'
@@ -11,8 +13,8 @@ echo -e "${BLUE}🚀 Configurando entorno de desarrollo para angelito...${NC}"
 if ! command -v yay &> /dev/null; then
     echo -e "${GREEN}📦 yay no encontrado. Instalando desde el AUR...${NC}"
     sudo pacman -S --needed base-devel git
-    git clone https://aur.archlinux.org/yay.git
-    cd yay
+    git clone https://aur.archlinux.org/yay.git || exit 1
+    cd yay || exit 1
     makepkg -si --noconfirm
     cd ..
     rm -rf yay
@@ -26,7 +28,7 @@ DEPENDENCIAS=(
     hyprland kitty zsh fastfetch imagemagick wofi cava 
     ttf-meslo-nerd-font-powerlevel10k 
     zsh-syntax-highlighting zsh-autosuggestions
-    caelestia-shell- hyprmod
+    caelestia-shell-git hyprmod
 )
 
 echo -e "${GREEN}📥 Instalando dependencias del sistema y Zsh...${NC}"
@@ -38,7 +40,7 @@ echo -e "${GREEN}🔗 Creando enlaces simbólicos...${NC}"
 CARPETAS=("hypr" "kitty" "wofi" "cava" "fastfetch")
 for carpeta in "${CARPETAS[@]}"; do
     [ -d "$HOME/.config/$carpeta" ] && mv "$HOME/.config/$carpeta" "$HOME/.config/${carpeta}_bak"
-    ln -s "$(pwd)/$carpeta" "$HOME/.config/$carpeta"
+    ln -sf "$(pwd)/$carpeta" "$HOME/.config/$carpeta"
 done
 
 # Vincular .zshrc corregido
