@@ -11,12 +11,20 @@ fi
 check_dep() {
     if ! command -v "$1" &> /dev/null; then
         echo "❌ Falta dependencia: $1"
+        exit 1
     fi
 }
 
 check_dep hyprland
 check_dep kitty
 check_dep zsh
+
+if [ -d "$HOME/.config/hypr" ]; then
+    echo "⚠️ Parece que ya tienes configuraciones instaladas."
+fi
+
+echo -e "${BLUE}🔄 Actualizando base de datos de paquetes...${NC}"
+sudo pacman -Sy
 
 # --- Colores ---
 BLUE='\033[0;34m'
@@ -61,6 +69,6 @@ done
 
 # Vincular .zshrc corregido
 [ -f ~/.zshrc ] && mv ~/.zshrc ~/.zshrc_bak
-ln -s "$(pwd)/.zshrc" ~/.zshrc
+ln -sf "$(pwd)/.zshrc" ~/.zshrc
 
 echo -e "${BLUE}✅ ¡Todo listo! yay habilitado y sistema configurado.${NC}"
