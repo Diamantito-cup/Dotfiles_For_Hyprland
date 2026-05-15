@@ -2,6 +2,12 @@
 
 set -e
 
+# Verificar que estás en la raíz del repo
+if [ ! -f "install.sh" ] || [ ! -d "hypr" ]; then
+    echo "❌ Error: Ejecuta este script desde la raíz del repositorio."
+    exit 1
+fi
+
 # --- Colores ---
 BLUE='\033[0;34m'
 GREEN='\033[0;32m'
