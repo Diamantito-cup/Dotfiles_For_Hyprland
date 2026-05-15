@@ -8,6 +8,16 @@ if [ ! -f "install.sh" ] || [ ! -d "hypr" ]; then
     exit 1
 fi
 
+check_dep() {
+    if ! command -v "$1" &> /dev/null; then
+        echo "❌ Falta dependencia: $1"
+    fi
+}
+
+check_dep hyprland
+check_dep kitty
+check_dep zsh
+
 # --- Colores ---
 BLUE='\033[0;34m'
 GREEN='\033[0;32m'
