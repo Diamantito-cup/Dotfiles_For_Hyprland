@@ -56,6 +56,10 @@ Si les intereza estoy disponible para peticiones de cambio y reportes de bugs �
 
 Ahora mismo estoy mejorando el ./install.sh para que descarge las dependencias automaticamente, claro, para esto trendran que tener activado los repositorios AUR de yay (sigo trabajando con que sea compatible con paru :3 )
 
+<p align="center">
+  <video src="assets/example.mp4" width="800" autoplay loop muted></video>
+</p>
+
 ACLARACIÓN:
 ---
 ## ⚖️ Licencia
