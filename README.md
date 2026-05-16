@@ -56,7 +56,7 @@ Si les intereza estoy disponible para peticiones de cambio y reportes de bugs ðŸ
 
 Ahora mismo estoy mejorando el ./install.sh para que descarge las dependencias automaticamente, claro, para esto trendran que tener activado los repositorios AUR de yay (sigo trabajando con que sea compatible con paru :3 )
 
-[[video]] https://github.com/Diamantito-cup/Dotfiles_For_Hyprland/raw/dev/assets/preview.mp4
+![Demo Hyprland Rice](assets/preview.gif)
 
 ACLARACIÃ“N:
 ---
