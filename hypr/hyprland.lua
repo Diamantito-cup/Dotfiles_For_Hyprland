@@ -1,17 +1,17 @@
 -- =======================================================================================
 -- HYPRLAND LUA CONFIGURATION (VANGUARDIA)
--- Ricing adaptado al Modo Toji por Angelito
+-- Ricing adaptado al Modo Toji (chamba de la mas alta calidad señores) por Ange :P
 -- =======================================================================================
 
 ------------------
 ---- MONITORS ----
 ------------------
--- Ajustado exactamente a tu monitor principal de laptop (eDP-1)
+-- Ajustado exactamente a su monitor principal
 hl.monitor({
-    output   = "",
-    mode     = "preferred",
-    position = "auto",
-    scale    = "auto",
+    output   = "eDP-1",
+    mode     = "1920x1200@120",
+    position = "0x0",
+    scale    = "1.50",
 })
 
 ---------------------
@@ -25,7 +25,7 @@ local menu        = "hyprlauncher"
 ---- AUTOSTART ----
 -------------------
 hl.on("hyprland.start", function ()
-    -- Tu Caelestia Shell inicializando el entorno estético
+    -- Tu Caelestia Shell inicializando el entorno estético de la mas alta calidad
     hl.exec_cmd("QT_QPA_PLATFORMTHEME=qt6ct caelestia shell")
 end)
 
@@ -55,71 +55,61 @@ hl.config({
     },
 
     decoration = {
-        rounding       = 10,
-        rounding_power = 2,
-        active_opacity   = 1.0,
-        inactive_opacity = 1.0,
-
-        shadow = {
-            enabled      = true,
-            range        = 6,
-            render_power = 4,
-            color        = 0xee1a1a1a, -- Formato Hex inyectado
-        },
+        rounding = 10,
 
         blur = {
             enabled        = true,
             size           = 10,
             passes         = 3,
             vibrancy       = 0.2,
-            ignore_opacity = true, -- Mantiene el blur fino detrás de las transparencias
+            ignore_opacity = true, 
         },
     },
 
     animations = {
-        enabled = true, -- Yes pleas :D
+        enabled = true, -- Yes Pleas :P
     },
-
 })
-	-- Distribuciones y XWayland optimizado
+
+----------------------------------------
+---- DISTRIBUCIONES Y XWAYLAND ---------
+----------------------------------------
 hl.config({
     dwindle  = { preserve_split = true },
     master   = { new_status = "master" },
     misc     = { force_default_wallpaper = -1, disable_hyprland_logo = false },
-    
     xwayland = { 
         enabled = true,
-        force_zero_scaling = true, -- <--- ¡AQUÍ VA! Justo dentro de hl.config
+        force_zero_scaling = true,
     },
 })
 
-
--- Curvas Bezier
+----------------------------------------
+---- CURVAS BEZIER Y RESORTES ----------
+----------------------------------------
 hl.curve("easeOutQuint",   { type = "bezier", points = { {0.23, 1},    {0.32, 1}    } })
 hl.curve("easeInOutCubic", { type = "bezier", points = { {0.65, 0.05}, {0.36, 1}    } })
 hl.curve("linear",         { type = "bezier", points = { {0, 0},       {1, 1}       } })
 hl.curve("almostLinear",   { type = "bezier", points = { {0.5, 0.5},   {0.75, 1}    } })
 hl.curve("quick",          { type = "bezier", points = { {0.15, 0},    {0.1, 1}     } })
 hl.curve("easy",           { type = "spring", mass = 1, stiffness = 71.2633, dampening = 15.8273644 })
+hl.curve("chiclosa", { type = "bezier", points = { {0.15, 1.15}, {0.15, 1.15} } }) -- <-- mi curva personalizada :D
 
--- Animaciones de Ventanas, Capas y Escritorios
-hl.animation({ leaf = "global",        enabled = true,  speed = 10,   bezier = "default" })
-hl.animation({ leaf = "border",        enabled = true,  speed = 5.39, bezier = "easeOutQuint" })
-hl.animation({ leaf = "windows",       enabled = true,  speed = 4.79, bezier = "easeOutQuint" })
-hl.animation({ leaf = "windowsIn",      enabled = true,  speed = 4.1,  bezier = "easeOutQuint", style = "popin 87%" })
-hl.animation({ leaf = "windowsOut",     enabled = true,  speed = 1.49, bezier = "linear",       style = "popin 87%" })
-hl.animation({ leaf = "fadeIn",         enabled = true,  speed = 1.73, bezier = "almostLinear" })
-hl.animation({ leaf = "fadeOut",        enabled = true,  speed = 1.46, bezier = "almostLinear" })
-hl.animation({ leaf = "fade",           enabled = true,  speed = 3.03, bezier = "quick" })
-hl.animation({ leaf = "layers",         enabled = true,  speed = 3.81, bezier = "easeOutQuint" })
-hl.animation({ leaf = "layersIn",       enabled = true,  speed = 4,    bezier = "easeOutQuint", style = "fade" })
-hl.animation({ leaf = "layersOut",      enabled = true,  speed = 1.5,  bezier = "linear",       style = "fade" })
-hl.animation({ leaf = "fadeLayersIn",   enabled = true,  speed = 1.79, bezier = "almostLinear" })
-hl.animation({ leaf = "fadeLayersOut",  enabled = true,  speed = 1.39, bezier = "almostLinear" })
-hl.animation({ leaf = "workspaces",     enabled = true,  speed = 1.94, bezier = "almostLinear", style = "fade" })
-hl.animation({ leaf = "workspacesIn",   enabled = true,  speed = 1.21, bezier = "almostLinear", style = "fade" })
-hl.animation({ leaf = "workspacesOut",  enabled = true,  speed = 1.94, bezier = "almostLinear", style = "fade" })
-hl.animation({ leaf = "zoomFactor",     enabled = true,  speed = 7,    bezier = "quick" })
+----------------------------------------
+---- ANIMACIONES DE ENTORNO ------------
+----------------------------------------
+
+-- Ventanas (Con efecto gelatinoso al entrar y moverse)
+hl.animation({ leaf = "windowsIn",   enabled = true, speed = 5, bezier = "chiclosa", style = "slide" })
+hl.animation({ leaf = "windowsOut",  enabled = true, speed = 4, bezier = "easeOutQuint", style = "slide" })
+hl.animation({ leaf = "windowsMove", enabled = true, speed = 5, bezier = "chiclosa", style = "slide" })
+
+-- Capas (Caelestia Shell, menús)
+hl.animation({ leaf = "layersIn",    enabled = true, speed = 5, bezier = "chiclosa", style = "slide" })
+hl.animation({ leaf = "layersOut",   enabled = true, speed = 5, bezier = "easeOutQuint", style = "slide" })
+
+-- Escritorios virtuales
+hl.animation({ leaf = "workspaces",  enabled = true, speed = 5, bezier = "chiclosa", style = "slide" })
 
 -- Distribuciones
 hl.config({
@@ -152,7 +142,7 @@ local mainMod = "SUPER"
 -- Binds del ecosistema de Apps
 hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + C", hl.dsp.window.close())
-hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch exit"))
+hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
@@ -198,10 +188,14 @@ hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = tr
 hl.bind("XF86AudioPlay",  hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = true })
 
--- Capturas de pantalla dirigidas a tu carpeta personalizada
-hl.bind("Print",         hl.dsp.exec_cmd("hyprshot -m region -o ~/Pictures/'capturas de pantalla'"))
-hl.bind("SHIFT + Print", hl.dsp.exec_cmd("hyprshot -m window -o ~/Pictures/'capturas de pantalla'"))
-hl.bind("CTRL + Print",  hl.dsp.exec_cmd("hyprshot -m output -o ~/Pictures/'capturas de pantalla'"))
+-- Capturas de pantalla dirigidas a mi carpeta personalizada de ~/Imágenes/'capturas de pantalla'
+hl.bind("Print",         hl.dsp.exec_cmd("hyprshot -m region -o ~/Imagenes/'capturas de pantalla'"))
+hl.bind("SHIFT + Print", hl.dsp.exec_cmd("hyprshot -m window -o ~/Imagenes/'capturas de pantalla'"))
+hl.bind("CTRL + Print",  hl.dsp.exec_cmd("hyprshot -m output -o ~/Imagenes/'capturas de pantalla'"))
+
+-- Sistema de Wofi y Rofimoji
+hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("command wofi --show drun --allow-images"))
+hl.bind(mainMod .. " + space", hl.dsp.exec_cmd("command rofimoji"))
 
 --------------------------------
 ---- WINDOWS AND WORKSPACES ----
@@ -212,7 +206,7 @@ hl.window_rule({
     suppress_event = "maximize",
 })
 
--- Tu icónica transparencia global Toji Mode
+-- Mi icónica transparencia global Toji Mode (modo chamba señores)
 hl.window_rule({
     name = "transparencia-global",
     match = { class = "^.*$" },
@@ -234,4 +228,5 @@ hl.window_rule({
     float = true,
 })
 
--- Actualmente hyprmod es IN COMPATIBLE con los formatos .lua de hyprland, así que no se va a incluir en esta commit :P
+-- HyprMod managed settings
+require("hyprland-gui")
