@@ -8,10 +8,10 @@
 ------------------
 -- Ajustado exactamente a tu monitor principal de laptop (eDP-1)
 hl.monitor({
-    output   = "eDP-1",
-    mode     = "1920x1200@120",
-    position = "0x0",
-    scale    = "1.50",
+    output   = "",
+    mode     = "preferred",
+    position = "auto",
+    scale    = "auto",
 })
 
 ---------------------
@@ -77,7 +77,7 @@ hl.config({
     },
 
     animations = {
-        enabled = true,
+        enabled = true, -- Yes pleas :D
     },
 
 })
@@ -234,46 +234,4 @@ hl.window_rule({
     float = true,
 })
 
-
------------------------------------------------------------
----- HYPRMOD INTEROP: COMPATIBILIDAD PARCIAL EN VIVO ----
------------------------------------------------------------
--- Esta función lee el archivo de texto plano generado por HyprMod,
--- extrae los binds o configuraciones, y los ejecuta mediante el backend nativo de Lua.
-
-local hypr_gui_path = "/home/angelito/.config/hypr/hyprland-gui.conf"
-local file = io.open(hypr_gui_path, "r")
-
-if file then
-    file:close()
-    for line in io.lines(hypr_gui_path) do
-        -- Ignorar comentarios y líneas vacías
-        if line ~= "" and not line:match("^%s*#") then
-            
-            -- 1. Parsear Variables de Entorno (env = VAR, VAL)
-            if line:match("^%s*env%s*=") then
-                local var, val = line:match("=%s*([^,]+)%s*,%s*(.+)")
-                if var and val then hl.env(var:gsub("%s+", ""), val:gsub("%s+", "")) end
-
-            -- 2. Parsear Keybinds inyectados por HyprMod (bind = MOD, KEY, exec, CMD)
-            elseif line:match("^%s*bind%s*=") then
-                local mod, key, cmd = line:match("=%s*([^,]+)%s*,%s*([^,]+)%s*,%s*exec%s*,%s*(.+)")
-                if mod and key and cmd then
-                    hl.bind(mod:gsub("%s+", "") .. " + " .. key:gsub("%s+", ""), hl.dsp.exec_cmd(cmd))
-                end
-
-            -- 3. Parsear Monitores externos dinámicos
-            elseif line:match("^%s*monitor%s*=") then
-                local output, mode, pos, scale = line:match("=%s*([^,]+)%s*,%s*([^,]+)%s*,%s*([^,]+)%s*,%s*([^,]+)")
-                if output then
-                    hl.monitor({
-                        output = output:gsub("%s+", ""),
-                        mode = mode:gsub("%s+", ""),
-                        position = pos:gsub("%s+", ""),
-                        scale = scale:match("^%s*([%d%.]+)") or "1",
-                    })
-                end
-            end
-        end
-    end
-end
+-- Actualmente hyprmod es IN COMPATIBLE con los formatos .lua de hyprland, así que no se va a incluir en esta commit :P
