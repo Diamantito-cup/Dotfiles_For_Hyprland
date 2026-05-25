@@ -33,6 +33,10 @@ Pero para que funcione deben tener instaladas las siguientes dependencias
 
 10- zsh-syntax-highlighting y zsh-autosuggestions
 
+11- Kvantum
+
+12- Qt6ct
+
 ## Instalación automatica
 
 Con esto aclarado, lo unico que tiene que hacer es usar el ./install.sh y ya, debería (digo debería porque la verdad está en desarrollo todavía)
