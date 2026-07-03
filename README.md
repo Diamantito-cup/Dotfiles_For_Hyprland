@@ -144,6 +144,12 @@ Si les intereza estoy disponible para peticiones de cambio y reportes de bugs �
 
 ---
 
-## ⚖️ Licencia
+<h1 align="center">⚖️ Licencia</h1>
 
-Este proyecto está bajo la licencia **GNU GPL v3.0**. Eres libre de usarlo, modificarlo y distribuirlo, siempre y cuando mantengas la misma licencia.
+*Este proyecto está bajo la licencia **GNU GPL v3.0**. Eres libre de usarlo, modificarlo y distribuirlo, siempre y cuando mantengas la misma licencia.*
+
+---
+
+bueno, ahora sí, que tengan un bonito día <3
+
+> -- By Ange^_^
