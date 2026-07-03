@@ -107,7 +107,7 @@ Ahora vamos con fastfetch, abre una terminal **(Windows(Super) + Q)** y haz:
 ```bash
 mkdir -p ~/.config/fastfetch
 ```
-No es necesario crear config porque nosotros la vamos a generar a mano, luego, en Dolphin, vamos a salir de la carpeta wofi (la que está dentro de Dotfiles_For_Hyprland) y entremos a la carpeta fastfetch, dentro encontraran dos cosas, una carpeta llamada `images`, que es donde están las imaganes, y un archivo llamado `config.jsonc`, copia ambas cosas, y en la vista dividida, en la barra de busqueda escribe `~/.config/fastfetc/` la carpeta debe estar vacia, si no, pueden borrar lo que está dentro y pegar lo que habian copiado (la carpeta images y el archivo config.jsonc) y listo :3 
+No es necesario crear config porque nosotros la vamos a generar a mano, luego, en Dolphin, vamos a salir de la carpeta wofi (la que está dentro de Dotfiles_For_Hyprland) y entremos a la carpeta fastfetch, dentro encontraran dos cosas, una carpeta llamada `images`, que es donde están las imaganes, y un archivo llamado `config.jsonc`, copia ambas cosas, y en la vista dividida, en la barra de busqueda escribe `~/.config/fastfetch/` la carpeta debe estar vacia, si no, pueden borrar lo que está dentro y pegar lo que habian copiado (la carpeta images y el archivo config.jsonc) y listo :3 
 
 Si se preguntan porque no metí a cava aquí es porque con caelestia  pueden hacer:
 ```bash
