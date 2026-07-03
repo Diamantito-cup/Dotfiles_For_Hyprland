@@ -68,7 +68,7 @@ Con lo anterior aclarado, lo unico que tiene que hacer es usar el `./install.sh`
 
 <h3 align="center">Instalación manual</h3>
 
-Con que elejiste el camino de la muerte... Baja el `.zip` desde aquí, o haz:
+Con que elegiste el camino de la muerte... Baja el `.zip` desde aquí, o haz:
 ```bash
 git clone https://github.com/Diamantito-cup/Dotfiles_For_Hyprland.git ~/Dotfiles && cd ~/Dotfiles
 git checkout dev
