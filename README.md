@@ -62,7 +62,7 @@ Pero para que funcione deben tener instaladas las siguientes dependencias
 
 <h3 align="center">Instalación automatica</h3>
 
-Con lo anterior aclarado, lo unico que tiene que hacer es usar el `./install.sh` y ya (lo e estado mejorando durante todo este tiempo), debería (digo debería porque la verdad está en desarrollo todavía) instalarles todo en sus sitema, sigo trabajando en la sustitución de carpetas y todo eso, así que posiblemente tenga errores y bugs que, con el tiempo voy a arreglar :3 
+Con lo anterior aclarado, lo unico que tiene que hacer es usar el `./install.sh` y ya (lo he estado mejorando durante todo este tiempo), debería (digo debería porque la verdad está en desarrollo todavía) instalarles todo en sus sitema, sigo trabajando en la sustitución de carpetas y todo eso, así que posiblemente tenga errores y bugs que, con el tiempo voy a arreglar :3 
 
 ---
 
@@ -73,7 +73,7 @@ Con que elegiste el camino de la muerte... Baja el `.zip` desde aquí, o haz:
 git clone https://github.com/Diamantito-cup/Dotfiles_For_Hyprland.git ~/Dotfiles && cd ~/Dotfiles
 git checkout dev
 ```
-Y luego descompirmelo (en caso de que hayas bajado el `.zip` desde aquí, para), dentro encontraras las carpetas de: hypr, wofi, kitty y fastfetch, y el archivo de `.zshrc`, puedes ignorar la carpeta  de Wallpapers y assets, puedes usar la carpeta de Wallpapers como base para tu colección, pero las que vamos a usar son las 4 anteriormente mencionadas y el archivo `.zshrc`.
+Y luego descomprimelo (en caso de que hayas bajado el `.zip` desde aquí, para), dentro encontraras las carpetas de: hypr, wofi, kitty y fastfetch, y el archivo de `.zshrc`, puedes ignorar la carpeta  de Wallpapers y assets, puedes usar la carpeta de Wallpapers como base para tu colección, pero las que vamos a usar son las 4 anteriormente mencionadas y el archivo `.zshrc`.
 
 ---
 
@@ -85,7 +85,7 @@ Suponiendo que ya tienes instaladas todas las dependencias necesarias, iniciemos
 
 <h3 align="center">Caso B: haber hecho el git clone</h3>
 
-Si elegiste hacer el `git clone` pues, bien, te ahorras estar entrando y saliendo de tu carpeta Descargas/Downloads, lo mismo de arriba, solo que cambia Descargas/Downloads por ~/Dotfiles (o el directorio donde hallas clonado este repositorio).
+Si elegiste hacer el `git clone` pues, bien, te ahorras estar entrando y saliendo de tu carpeta Descargas/Downloads, lo mismo de arriba, solo que cambia Descargas/Downloads por ~/Dotfiles (o el directorio donde hayas clonado este repositorio).
 
 ---
 
