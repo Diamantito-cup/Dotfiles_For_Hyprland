@@ -1,113 +1,158 @@
 #!/usr/bin/env bash
 
-# Salir inmediatamente si un comando falla
-set -e
+set -euo pipefail
 
-# Colores para la terminal
-VERDE="\e[0;32m"
-AMARILLO="\e[0;33m"
-ROJO="\e[0;31m"
+# 🎨 PALETA DE COLORES ANSI
+BOLD="\e[1m"
+VERDE="\e[32m"
+AZUL="\e[34m"
+CYAN="\e[36m"
+AMARILLO="\e[33m"
+ROJO="\e[31m"
+MAGENTA="\e[35m"
 RESET="\e[0m"
 
-echo -e "${VERDE}🚀 Iniciando instalación del entorno de pruebas (Lua)...${RESET}"
-
-# Definir directorios base
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE}")" && pwd)"
+# 📁 RUTA BASE Y BACKUPS
 CONFIG_DIR="$HOME/.config"
 BACKUP_DIR="$HOME/.config_hypr_bak_$(date +%Y%m%d_%H%M%S)"
 
-# Componentes: archivos y directorios a instalar
-# Formato: "tipo:nombre:origen"
-# tipo: "file" o "dir"
-COMPONENTES=(
-    "file:hyprland.lua:hypr/hyprland.lua"
-    "dir:caelestia:caelestia"
-    "dir:wofi:wofi"
-)
+# ==========================================
+# 🖼️ BANNERS Y SECCIONES VISUALES
+# ==========================================
+imprimir_banner() {
+  clear
+  echo -e "${CYAN}${BOLD}"
+  cat <<"EOF"
+  ██╗  ██╗██╗   ██╗██████╗ ██████╗ ██╗      █████╗ ███╗   ██╗██████╗ 
+  ██║  ██║╚██╗ ██╔╝██╔══██╗██║  ██║██║     ██╔══██╗████╗  ██║██╔══██╗
+  ███████║ ╚████╔╝ ██████╔╝██████║ ██║     ███████║██╔██╗ ██║██║  ██║
+  ██╔══██║  ╚██╔╝  ██╔═══╝ ██╔══██║██║     ██╔══██║██║╚██╗██║██║  ██║
+  ██║  ██║   ██║   ██║     ██║  ██║███████╗██║  ██║██║ ╚████║██████╔╝
+  ╚═╝  ╚═╝   ╚═╝   ╚═╝     ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ 
+EOF
+  echo -e "${MAGENTA}       --- ARCH LINUX HYPRLAND DOTFILES INSTALLER ---${RESET}\n"
+}
 
-# 1. Crear copia de seguridad si ya existen configuraciones previas
-echo -e "${AMARILLO}📦 Verificando configuraciones existentes para respaldo...${RESET}"
-NECESITA_BACKUP=false
+imprimir_seccion() {
+  echo -e "\n${BOLD}${AZUL}───> $1${RESET}"
+}
 
-for comp in "${COMPONENTES[@]}"; do
-    tipo=$(echo "$comp" | cut -d: -f1)
-    nombre=$(echo "$comp" | cut -d: -f2)
-    
-    if [ "$tipo" = "dir" ]; then
-        if [ -d "$CONFIG_DIR/$nombre" ]; then
-            NECESITA_BACKUP=true
-        fi
-    else
-        # Para archivos, verificar si existe en la ubicación esperada
-        if [ "$nombre" = "hyprland.lua" ]; then
-            if [ -f "$CONFIG_DIR/hypr/hyprland.conf" ]; then
-                NECESITA_BACKUP=true
-            fi
-        fi
+# ==========================================
+# 📦 GESTOR DE DEPENDENCIAS (pacman/yay)
+# ==========================================
+verificar_aur_helper() {
+  if ! command -v yay &>/dev/null; then
+    echo -e "${AMARILLO}⚠️ 'yay' no está instalado. Instalando yay (AUR helper)...${RESET}"
+    sudo pacman -S --needed --noconfirm base-devel git
+    git clone https://aur.archlinux.org/yay.git /tmp/yay
+    (cd /tmp/yay && makepkg -si --noconfirm)
+    rm -rf /tmp/yay
+  fi
+}
+
+instalar_paquetes() {
+  imprimir_seccion "Gestión de Dependencias y Software Extra"
+  verificar_aur_helper
+
+  # Lista base para el entorno Hyprland + Lua
+  local paquetes_base=(hyprland kitty neovim fastfetch)
+
+  echo -e "${CYAN}Instalando entorno base (Hyprland + herramientas)...${RESET}"
+  sudo pacman -S "${paquetes_base[@]}"
+
+  # Menú interactivo para software opcional
+  echo -e "\n${AMARILLO}¿Deseas seleccionar software opcional para instalar?${RESET}"
+
+  declare -A OPCIONES=(
+    ["1"]="vscodium-bin"
+    ["2"]="spotify"
+    ["3"]="spicetify-cli"
+    ["4"]="zen-browser-bin"
+    ["5"]="midnight-shell-git"
+    ["6"]="midnight-shell-cli-git"
+  )
+
+  for key in "${!OPCIONES[@]}"; do
+    pkg=$(echo "${OPCIONES[$key]}" | cut -d: -f1)
+    desc=$(echo "${OPCIONES[$key]}" | cut -d: -f2)
+
+    read -p "$(echo -e "${CYAN}¿Instalar $desc ($pkg)? [s/N]: ${RESET}")" resp
+    if [[ "$resp" =~ ^[Ss]$ ]]; then
+      echo -e "${VERDE}Instalando $pkg...${RESET}"
+      yay -S --needed --noconfirm "$pkg"
     fi
-done
+  done
+}
 
-if [ "$NECESITA_BACKUP" = true ]; then
-    echo -e "${AMARILLO}💾 Creando copia de seguridad en: $BACKUP_DIR${RESET}"
-    mkdir -p "$BACKUP_DIR"
-    
-    # Respaldar la carpeta de Hyprland si existe
-    if [ -d "$CONFIG_DIR/hypr" ]; then
-        cp -r "$CONFIG_DIR/hypr" "$BACKUP_DIR/" 2>/dev/null || true
-    fi
-    
-    # Respaldar otros componentes
-    for comp in "${COMPONENTES[@]}"; do
-        tipo=$(echo "$comp" | cut -d: -f1)
-        nombre=$(echo "$comp" | cut -d: -f2)
-        
-        if [ "$tipo" = "dir" ]; then
-            if [ -d "$CONFIG_DIR/$nombre" ]; then
-                cp -r "$CONFIG_DIR/$nombre" "$BACKUP_DIR/" 2>/dev/null || true
-            fi
-        fi
-    done
-    
-    echo -e "${VERDE}✅ Copia de seguridad creada con éxito.${RESET}"
-fi
+# ==========================================
+# 💾 GESTIÓN DE BACKUPS
+# ==========================================
+gestionar_backup() {
+  imprimir_seccion "Copia de Seguridad"
 
-# 2. Limpieza crítica de Hyprland viejo (.conf)
-# Si hyprland.conf se queda en ~/.config/hypr/, el sistema podría ignorar tu archivo .lua
-if [ -f "$CONFIG_DIR/hypr/hyprland.conf" ]; then
-    echo -e "${ROJO}🗑️ Removiendo hyprland.conf antiguo para priorizar la carga de Lua...${RESET}"
+  read -p "$(echo -e "${AMARILLO}¿Deseas crear una copia de seguridad de ~/.config/hypr antes de instalar? [S/n]: ${RESET}")" resp
+  if [[ "$resp" =~ ^[Nn]$ ]]; then
+    echo -e "${ROJO}Omitiendo respaldo...${RESET}"
+    return
+  fi
+
+  echo -e "${VERDE}💾 Creando copia de seguridad en: $BACKUP_DIR${RESET}"
+  mkdir -p "$BACKUP_DIR"
+
+  if [ -d "$CONFIG_DIR/hypr" ]; then
+    cp -r "$CONFIG_DIR/hypr" "$BACKUP_DIR/"
+  fi
+  echo -e "${VERDE}✅ Respaldos creados exitosamente.${RESET}"
+}
+
+# ==========================================
+# ⚙️ INSTALACIÓN DE DOTFILES Y CONFIGS
+# ==========================================
+instalar_dotfiles() {
+  imprimir_seccion "Despliegue de Configuraciones (Lua)"
+
+  # Limpieza del hyprland.conf clásico para dar prioridad a hyprland.lua
+  if [ -f "$CONFIG_DIR/hypr/hyprland.conf" ]; then
+    echo -e "${ROJO}🗑️ Eliminando hyprland.conf antiguo para habilitar la carga de Lua...${RESET}"
     rm -f "$CONFIG_DIR/hypr/hyprland.conf"
-fi
+  fi
 
-# 3. Instalación de los nuevos archivos de la rama dev
-echo -e "${VERDE}⚙️ Instalando nuevos archivos de configuración...${RESET}"
+  mkdir -p "$CONFIG_DIR/hypr"
 
-# Instalar cada componente
-for comp in "${COMPONENTES[@]}"; do
-    tipo=$(echo "$comp" | cut -d: -f1)
-    nombre=$(echo "$comp" | cut -d: -f2)
-    origen=$(echo "$comp" | cut -d: -f3)
-    
-    if [ "$tipo" = "dir" ]; then
-        if [ -d "$SCRIPT_DIR/$origen" ]; then
-            mkdir -p "$CONFIG_DIR/$nombre"
-            cp -r "$SCRIPT_DIR/$origen/"* "$CONFIG_DIR/$nombre/" 2>/dev/null || true
-            echo -e "  ↳ ${VERDE}Instalada la carpeta:${RESET} $nombre -> $CONFIG_DIR/"
-        else
-            echo -e "  ↳ ${ROJO}Advertencia:${RESET} No se encontró la carpeta $origen en el repositorio."
-        fi
-    else
-        # Para archivos
-        if [ -f "$SCRIPT_DIR/$origen" ]; then
-            mkdir -p "$(dirname "$CONFIG_DIR/$nombre")"
-            cp "$SCRIPT_DIR/$origen" "$CONFIG_DIR/$nombre"
-            echo -e "  ↳ ${VERDE}Instalado:${RESET} $nombre -> $CONFIG_DIR/"
-        else
-            echo -e "  ↳ ${ROJO}Advertencia:${RESET} No se encontró el archivo $origen en el repositorio."
-        fi
-    fi
-done
+  if [ -f "hypr/hyprland.lua" ]; then
+    cp "hypr/hyprland.lua" "$CONFIG_DIR/hypr/"
+    echo -e "  ↳ ${VERDE}Copiado:${RESET} hyprland.lua -> $CONFIG_DIR/hypr/"
+  fi
 
-# 4. Mostrar resumen
-echo -e "${VERDE}✅ ¡Entorno de desarrollo configurado con éxito!${RESET}"
-echo -e "${AMARILLO}💡 Si había configuraciones anteriores, puedes restaurarlas desde: $BACKUP_DIR${RESET}"
-echo -e "${AMARILLO}💡 Reinicia tu sesión de Hyprland para aplicar los cambios basados en Lua.${RESET}"
+  if [ -d "caelestia" ]; then
+    mkdir -p "$CONFIG_DIR/caelestia"
+    cp -r caelestia/* "$CONFIG_DIR/caelestia/"
+    echo -e "  ↳ ${VERDE}Copiado directorio:${RESET} caelestia -> $CONFIG_DIR/"
+  fi
+}
+
+# ==========================================
+# 🚀 FLUJO PRINCIPAL DE EJECUCIÓN
+# ==========================================
+main() {
+  imprimir_banner
+
+  echo -e "${BOLD}Bienvenido al configurador del entorno Hyprland (dev branch).${RESET}"
+  echo -e "Este script instalará las dependencias y aplicará los dotfiles basados en Lua.\n"
+
+  read -p "$(echo -e "${CYAN}¿Deseas iniciar el proceso de instalación? [S/n]: ${RESET}")" inicio
+  if [[ "$inicio" =~ ^[Nn]$ ]]; then
+    echo -e "${ROJO}Instalación cancelada.${RESET}"
+    exit 0
+  fi
+
+  gestionar_backup
+  instalar_paquetes
+  instalar_dotfiles
+
+  imprimir_seccion "¡Instalación Finalizada!"
+  echo -e "${VERDE}${BOLD}✨ ¡Entorno Hyprland configurado correctamente!${RESET}"
+  echo -e "${AMARILLO}Puedes revisar tus backups en: $BACKUP_DIR${RESET}\n"
+}
+
+main "$@"
