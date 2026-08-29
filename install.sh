@@ -1,74 +1,158 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
-# Verificar que estás en la raíz del repo
-if [ ! -f "install.sh" ] || [ ! -d "hypr" ]; then
-    echo "❌ Error: Ejecuta este script desde la raíz del repositorio."
-    exit 1
-fi
+# 🎨 PALETA DE COLORES ANSI
+BOLD="\e[1m"
+VERDE="\e[32m"
+AZUL="\e[34m"
+CYAN="\e[36m"
+AMARILLO="\e[33m"
+ROJO="\e[31m"
+MAGENTA="\e[35m"
+RESET="\e[0m"
 
-check_dep() {
-    if ! command -v "$1" &> /dev/null; then
-        echo "❌ Falta dependencia: $1"
-        exit 1
-    fi
+# 📁 RUTA BASE Y BACKUPS
+CONFIG_DIR="$HOME/.config"
+BACKUP_DIR="$HOME/.config_hypr_bak_$(date +%Y%m%d_%H%M%S)"
+
+# ==========================================
+# 🖼️ BANNERS Y SECCIONES VISUALES
+# ==========================================
+imprimir_banner() {
+  clear
+  echo -e "${CYAN}${BOLD}"
+  cat <<"EOF"
+  ██╗  ██╗██╗   ██╗██████╗ ██████╗ ██╗      █████╗ ███╗   ██╗██████╗ 
+  ██║  ██║╚██╗ ██╔╝██╔══██╗██║  ██║██║     ██╔══██╗████╗  ██║██╔══██╗
+  ███████║ ╚████╔╝ ██████╔╝██████║ ██║     ███████║██╔██╗ ██║██║  ██║
+  ██╔══██║  ╚██╔╝  ██╔═══╝ ██╔══██║██║     ██╔══██║██║╚██╗██║██║  ██║
+  ██║  ██║   ██║   ██║     ██║  ██║███████╗██║  ██║██║ ╚████║██████╔╝
+  ╚═╝  ╚═╝   ╚═╝   ╚═╝     ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ 
+EOF
+  echo -e "${MAGENTA}       --- ARCH LINUX HYPRLAND DOTFILES INSTALLER ---${RESET}\n"
 }
 
-check_dep hyprland
-check_dep kitty
-check_dep zsh
+imprimir_seccion() {
+  echo -e "\n${BOLD}${AZUL}───> $1${RESET}"
+}
 
-if [ -d "$HOME/.config/hypr" ]; then
-    echo "⚠️ Parece que ya tienes configuraciones instaladas."
-fi
+# ==========================================
+# 📦 GESTOR DE DEPENDENCIAS (pacman/yay)
+# ==========================================
+verificar_aur_helper() {
+  if ! command -v yay &>/dev/null; then
+    echo -e "${AMARILLO}⚠️ 'yay' no está instalado. Instalando yay (AUR helper)...${RESET}"
+    sudo pacman -S --needed --noconfirm base-devel git
+    git clone https://aur.archlinux.org/yay.git /tmp/yay
+    (cd /tmp/yay && makepkg -si --noconfirm)
+    rm -rf /tmp/yay
+  fi
+}
 
-echo -e "${BLUE}🔄 Actualizando base de datos de paquetes...${NC}"
-sudo pacman -Sy
+instalar_paquetes() {
+  imprimir_seccion "Gestión de Dependencias y Software Extra"
+  verificar_aur_helper
 
-# --- Colores ---
-BLUE='\033[0;34m'
-GREEN='\033[0;32m'
-NC='\033[0m'
+  # Lista base para el entorno Hyprland + Lua
+  local paquetes_base=(hyprland kitty neovim fastfetch)
 
-echo -e "${BLUE}🚀 Configurando entorno de desarrollo para angelito...${NC}"
+  echo -e "${CYAN}Instalando entorno base (Hyprland + herramientas)...${RESET}"
+  sudo pacman -S "${paquetes_base[@]}"
 
-# 1. Habilitar yay (AUR Helper)
-if ! command -v yay &> /dev/null; then
-    echo -e "${GREEN}📦 yay no encontrado. Instalando desde el AUR...${NC}"
-    sudo pacman -S --needed base-devel git
-    git clone https://aur.archlinux.org/yay.git || exit 1
-    cd yay || exit 1
-    makepkg -si --noconfirm
-    cd ..
-    rm -rf yay
-else
-    echo -e "${BLUE}✅ yay ya está instalado.${NC}"
-fi
+  # Menú interactivo para software opcional
+  echo -e "\n${AMARILLO}¿Deseas seleccionar software opcional para instalar?${RESET}"
 
-# 2. Dependencias (Ahora sí, usando yay)
-# Incluimos ImageMagick para el logo de Fastfetch y p10k
-DEPENDENCIAS=(
-    hyprland kitty zsh fastfetch imagemagick wofi cava 
-    ttf-meslo-nerd-font-powerlevel10k 
-    zsh-syntax-highlighting zsh-autosuggestions
-    caelestia-shell-git hyprmod
-)
+  declare -A OPCIONES=(
+    ["1"]="vscodium-bin"
+    ["2"]="spotify"
+    ["3"]="spicetify-cli"
+    ["4"]="zen-browser-bin"
+    ["5"]="midnight-shell-git"
+    ["6"]="midnight-shell-cli-git"
+  )
 
-echo -e "${GREEN}📥 Instalando dependencias del sistema y Zsh...${NC}"
-yay -S --needed --noconfirm "${DEPENDENCIAS[@]}"
+  for key in "${!OPCIONES[@]}"; do
+    pkg=$(echo "${OPCIONES[$key]}" | cut -d: -f1)
+    desc=$(echo "${OPCIONES[$key]}" | cut -d: -f2)
 
-# 3. Configuración de Dotfiles (Enlaces simbólicos)
-# Esto vincula tu .zshrc sin errores de Powerlevel10k
-echo -e "${GREEN}🔗 Creando enlaces simbólicos...${NC}"
-CARPETAS=("hypr" "kitty" "wofi" "cava" "fastfetch")
-for carpeta in "${CARPETAS[@]}"; do
-    [ -d "$HOME/.config/$carpeta" ] && mv "$HOME/.config/$carpeta" "$HOME/.config/${carpeta}_bak"
-    ln -sf "$(pwd)/$carpeta" "$HOME/.config/$carpeta"
-done
+    read -p "$(echo -e "${CYAN}¿Instalar $desc ($pkg)? [s/N]: ${RESET}")" resp
+    if [[ "$resp" =~ ^[Ss]$ ]]; then
+      echo -e "${VERDE}Instalando $pkg...${RESET}"
+      yay -S --needed --noconfirm "$pkg"
+    fi
+  done
+}
 
-# Vincular .zshrc corregido
-[ -f ~/.zshrc ] && mv ~/.zshrc ~/.zshrc_bak
-ln -sf "$(pwd)/.zshrc" ~/.zshrc
+# ==========================================
+# 💾 GESTIÓN DE BACKUPS
+# ==========================================
+gestionar_backup() {
+  imprimir_seccion "Copia de Seguridad"
 
-echo -e "${BLUE}✅ ¡Todo listo! yay habilitado y sistema configurado.${NC}"
+  read -p "$(echo -e "${AMARILLO}¿Deseas crear una copia de seguridad de ~/.config/hypr antes de instalar? [S/n]: ${RESET}")" resp
+  if [[ "$resp" =~ ^[Nn]$ ]]; then
+    echo -e "${ROJO}Omitiendo respaldo...${RESET}"
+    return
+  fi
+
+  echo -e "${VERDE}💾 Creando copia de seguridad en: $BACKUP_DIR${RESET}"
+  mkdir -p "$BACKUP_DIR"
+
+  if [ -d "$CONFIG_DIR/hypr" ]; then
+    cp -r "$CONFIG_DIR/hypr" "$BACKUP_DIR/"
+  fi
+  echo -e "${VERDE}✅ Respaldos creados exitosamente.${RESET}"
+}
+
+# ==========================================
+# ⚙️ INSTALACIÓN DE DOTFILES Y CONFIGS
+# ==========================================
+instalar_dotfiles() {
+  imprimir_seccion "Despliegue de Configuraciones (Lua)"
+
+  # Limpieza del hyprland.conf clásico para dar prioridad a hyprland.lua
+  if [ -f "$CONFIG_DIR/hypr/hyprland.conf" ]; then
+    echo -e "${ROJO}🗑️ Eliminando hyprland.conf antiguo para habilitar la carga de Lua...${RESET}"
+    rm -f "$CONFIG_DIR/hypr/hyprland.conf"
+  fi
+
+  mkdir -p "$CONFIG_DIR/hypr"
+
+  if [ -f "hypr/hyprland.lua" ]; then
+    cp "hypr/hyprland.lua" "$CONFIG_DIR/hypr/"
+    echo -e "  ↳ ${VERDE}Copiado:${RESET} hyprland.lua -> $CONFIG_DIR/hypr/"
+  fi
+
+  if [ -d "caelestia" ]; then
+    mkdir -p "$CONFIG_DIR/caelestia"
+    cp -r caelestia/* "$CONFIG_DIR/caelestia/"
+    echo -e "  ↳ ${VERDE}Copiado directorio:${RESET} caelestia -> $CONFIG_DIR/"
+  fi
+}
+
+# ==========================================
+# 🚀 FLUJO PRINCIPAL DE EJECUCIÓN
+# ==========================================
+main() {
+  imprimir_banner
+
+  echo -e "${BOLD}Bienvenido al configurador del entorno Hyprland (dev branch).${RESET}"
+  echo -e "Este script instalará las dependencias y aplicará los dotfiles basados en Lua.\n"
+
+  read -p "$(echo -e "${CYAN}¿Deseas iniciar el proceso de instalación? [S/n]: ${RESET}")" inicio
+  if [[ "$inicio" =~ ^[Nn]$ ]]; then
+    echo -e "${ROJO}Instalación cancelada.${RESET}"
+    exit 0
+  fi
+
+  gestionar_backup
+  instalar_paquetes
+  instalar_dotfiles
+
+  imprimir_seccion "¡Instalación Finalizada!"
+  echo -e "${VERDE}${BOLD}✨ ¡Entorno Hyprland configurado correctamente!${RESET}"
+  echo -e "${AMARILLO}Puedes revisar tus backups en: $BACKUP_DIR${RESET}\n"
+}
+
+main "$@"
