@@ -48,8 +48,6 @@ Pero para que funcione deben tener instaladas las siguientes dependencias
 
 * **ImageMagick**
 
-* **Wofi**
-
 * **Cava *(No se usa pero es recomendable tenerlo instalado si quieres la estetica a la hora de escuchar música, es opcional)***
 
 * **zsh-syntax-highlighting y zsh-autosuggestions**
@@ -58,7 +56,7 @@ Pero para que funcione deben tener instaladas las siguientes dependencias
 
 * **Qt6ct**
 
-Para saber las demás dependencias consulte el siguiente archivo: **[Lista de Depoendencias de los Dotfiles](dependencias.md)**
+Para saber las demás dependencias consulte el siguiente archivo: **[Lista de Dependencias de los Dotfiles](dependencias.md)**
 
 ---
 
