@@ -34,7 +34,7 @@ PD: Stats del video:
 
 <h2 align="center">AVISO!!!!!!</h2>
 
-Esta es la rama dev *(desarrollador)* de los dotfiles, aviso que no todo puede funcionar del todo, así que instalarla ya es su descición y no me culpen a mí si algo no funciona, con esto dicho, sigamos:
+Esto era parte de la rama dev *(desarrollador)* de los dotfiles, pero la información aquí ya fue comprobada y ahora está en la rama main, así que, ya dicho esto, sigamos:
 
 Este repo es sobre mi config personal de Dotfiles, lo que he hecho en esta ultima semana volviendo a Arch Linux, aquí les dejo un par de referencias de como va a quedar su sistema:
 
