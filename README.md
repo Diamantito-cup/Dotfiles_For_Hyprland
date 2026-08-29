@@ -88,9 +88,6 @@ Bueno, digamos que la instalación manual es MUY, larga, así que tiene su propi
 
 ![Terminal Kitty](assets/kitty-terminal.png)
 
-<h4>Referencia en video del ecosistema actual</h4>
-
-![Demo Hyprland Rice](assets/preview.gif)
 
 ---
 
