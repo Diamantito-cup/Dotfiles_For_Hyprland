@@ -16,10 +16,20 @@
 
 </div>
 
+
+https://github.com/user-attachments/assets/f210f707-62b2-49f2-835a-87c94d7fcc80
+
+
 ---
 
 Buenas gente, perdon si son de habla no hispana pero todavia estoy en ese proceso :3 así que, no desesperen gente, ya arreglaré eso, acalaro que esto es solo para **Arch + Caelestia shell**, aunque tambien puede ser usado en cualquier otra distro basada en arch, principalmente por *Caelestia-Shell* que actualmente solo está en Arch.
 
+PD: Stats del video:
+   * ***Reproductor***: *Spotify*
+
+   * ***Plug-ins***: *Spicetify + BlocAdds + Spicy Lyrics*
+
+   * ***Tema***: *Lucid Sachu*
 ---
 
 <h2 align="center">AVISO!!!!!!</h2>
