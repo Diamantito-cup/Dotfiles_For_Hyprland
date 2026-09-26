@@ -64,6 +64,8 @@ Pero para que funcione deben tener instaladas las siguientes dependencias
 
 * **Kvantum *(Y algun tema Catppuccin, solo para que Dolphin no se vea horrible)***
 
+* **HyprPM** ***con los siguentes plugins:dynamic-cursors y split-monitor-workspaces***
+
 * **Qt6ct**
 
 Para saber las demás dependencias consulte el siguiente archivo: **[Lista de Dependencias de los Dotfiles](dependencias.md)**
